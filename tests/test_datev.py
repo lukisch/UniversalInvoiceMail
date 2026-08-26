@@ -138,6 +138,36 @@ def test_datev_settings_dialog_table_operations():
     assert "Amazon" in new_cfg.konten_mapping
     assert new_cfg.konten_mapping["Amazon"] == (70001, 4930)
 
+    # Ungültige Tabellenwerte dürfen nicht still verworfen oder ersetzt werden.
+    dlg.table_mapping.item(0, 0).setText("Ungültig")
+    dlg.table_mapping.item(0, 1).setText("kein-konto")
+    is_valid, errors = dlg.validate_inputs()
+    assert is_valid is False
+    assert any("nur Ziffern" in error for error in errors)
+
+    dlg.table_mapping.item(0, 0).setText(" ")
+    is_valid, errors = dlg.validate_inputs()
+    assert is_valid is False
+    assert any("darf nicht leer sein" in error for error in errors)
+
+    dlg._reset_mapping()
+    dlg.inp_berater.clear()
+    dlg.inp_mandant.clear()
+    is_valid, errors = dlg.validate_inputs()
+    assert is_valid is False
+    assert any("Beraternummer" in error for error in errors)
+    assert any("Mandantennummer" in error for error in errors)
+    dlg.inp_berater.setText("99999")
+    dlg.inp_mandant.setText("11111")
+
+    # Schlüssel sind nach Trim und Groß-/Kleinschreibung eindeutig.
+    dlg._add_row()
+    duplicate_row = dlg.table_mapping.rowCount() - 1
+    dlg.table_mapping.item(duplicate_row, 0).setText(" amazon ")
+    is_valid, errors = dlg.validate_inputs()
+    assert is_valid is False
+    assert any("bereits in Zeile" in error for error in errors)
+
     dlg.close()
 
 

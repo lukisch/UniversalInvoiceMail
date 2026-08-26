@@ -3121,32 +3121,54 @@ class DATEVSettingsDialog(QDialog):
         self.mapping_data = dict(DEFAULT_KONTEN_MAPPING)
         self._populate_table()
 
-    def _get_table_mapping(self) -> dict:
+    def _get_raw_table_mapping(self) -> Tuple[dict, List[str]]:
+        """Liest Tabellenwerte verlustfrei und meldet doppelte Schlüssel."""
         mapping = {}
+        errors: List[str] = []
+        seen_keys = {}
         for row in range(self.table_mapping.rowCount()):
             item_key = self.table_mapping.item(row, 0)
             item_k = self.table_mapping.item(row, 1)
             item_gk = self.table_mapping.item(row, 2)
-            if not item_key or not item_key.text().strip():
-                continue
-            key = item_key.text().strip()
-            try:
-                k = int(item_k.text().strip()) if item_k else 70000
-            except ValueError:
-                k = 70000
-            try:
-                gk = int(item_gk.text().strip()) if item_gk else 4900
-            except ValueError:
-                gk = 4900
-            mapping[key] = (k, gk)
-        return mapping
+            key = item_key.text().strip() if item_key else ""
+            konto = item_k.text().strip() if item_k else ""
+            gegenkonto = item_gk.text().strip() if item_gk else ""
+
+            normalized_key = key.casefold()
+            if normalized_key:
+                if normalized_key in seen_keys:
+                    first_row = seen_keys[normalized_key]
+                    errors.append(
+                        f"Konten-Mapping-Zeile {row + 1}: Schlüssel '{key}' ist "
+                        f"bereits in Zeile {first_row} vorhanden."
+                    )
+                else:
+                    seen_keys[normalized_key] = row + 1
+
+            mapping[key] = (konto, gegenkonto)
+        return mapping, errors
+
+    def _get_table_mapping(self) -> dict:
+        """Konvertiert bereits validierte Tabellenwerte in DATEV-Kontonummern."""
+        raw_mapping, _ = self._get_raw_table_mapping()
+        return {
+            key: (int(konto), int(gegenkonto))
+            for key, (konto, gegenkonto) in raw_mapping.items()
+        }
 
     def validate_inputs(self) -> Tuple[bool, List[str]]:
         """Validiert die aktuellen Eingaben im Dialog vor dem Schließen."""
-        cfg = self.get_config()
+        raw_mapping, row_errors = self._get_raw_table_mapping()
+        cfg = DATEVConfig(
+            berater_nr=self.inp_berater.text().strip(),
+            mandant_nr=self.inp_mandant.text().strip(),
+            konten_mapping=raw_mapping,
+        )
         if DATEV_AVAILABLE:
-            return validate_datev_config(cfg)
-        errors = []
+            _, config_errors = validate_datev_config(cfg)
+            errors = row_errors + config_errors
+            return (len(errors) == 0), errors
+        errors = list(row_errors)
         if not self.inp_berater.text().strip().isdigit():
             errors.append("Beraternummer muss numerisch sein.")
         if not self.inp_mandant.text().strip().isdigit():
@@ -3169,8 +3191,8 @@ class DATEVSettingsDialog(QDialog):
     def get_config(self) -> DATEVConfig:
         """Gibt die aktuell eingestellte DATEVConfig zurück."""
         return DATEVConfig(
-            berater_nr=self.inp_berater.text().strip() or "12345",
-            mandant_nr=self.inp_mandant.text().strip() or "67890",
+            berater_nr=self.inp_berater.text().strip(),
+            mandant_nr=self.inp_mandant.text().strip(),
             konten_mapping=self._get_table_mapping()
         )
 

@@ -171,11 +171,13 @@ Aufwandskonto pflegen:
    die Standard-Zuordnung laden.
 4. Mit **OK** speichern; die Werte werden über `DATEVConfig` geladen und gespeichert.
 
-Der Dialog prüft beim Speichern Berater- und Mandantennummer, die Sachkontenlänge sowie
-nicht leere, numerische Konten-Zuordnungen. Bei einer ungültigen Eingabe bleibt der Dialog
-geöffnet und nennt die zu korrigierenden Felder. Diese technische Prüfung ersetzt keine
-fachliche Prüfung der Kontierung durch die Buchhaltung. Der bestehende 93-Spalten-
-Exportvertrag wird durch die UI-Scheibe nicht verändert.
+Der Dialog prüft beim Speichern Berater- und Mandantennummer, die Sachkontenlänge,
+nicht leere numerische Konten-Zuordnungen sowie eindeutige Absender-/Schlüsselwort-
+Schlüssel; Groß-/Kleinschreibung und Rand-Leerzeichen erzeugen keine getrennten
+Schlüssel. Bei einer ungültigen Eingabe bleibt der Dialog geöffnet und nennt die zu
+korrigierenden Zeilen oder Felder. Diese technische Prüfung ersetzt keine fachliche
+Prüfung der Kontierung durch die Buchhaltung. Der bestehende 93-Spalten-Exportvertrag
+wird durch die UI-Scheibe nicht verändert.
 
 ---
 

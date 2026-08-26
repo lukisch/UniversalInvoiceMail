@@ -41,6 +41,7 @@ def test_core_documentation_files():
         "llms.txt",
         "LICENSE",
         "CHANGELOG.md",
+        "ROADMAP.txt",
         "pyproject.toml",
         "EXPORTFORMAT.md",
         "USER_GUIDE.md",
@@ -113,10 +114,20 @@ def test_datev_validation_guidance_matches_the_dialog_contract():
     german_readme = (REPO_ROOT / "README-DE.md").read_text(encoding="utf-8")
     english_readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
     user_guide = (REPO_ROOT / "USER_GUIDE.md").read_text(encoding="utf-8")
+    roadmap = (REPO_ROOT / "ROADMAP.txt").read_text(encoding="utf-8")
 
     assert "Der Dialog prüft vor dem Speichern" in german_readme
     assert "The settings dialog validates" in english_readme
     assert "Der Dialog prüft beim Speichern" in user_guide
+    assert "case-insensitive uniqueness" in english_readme
+    assert "Groß-/Kleinschreibung" in german_readme
+    assert "Rand-Leerzeichen" in user_guide
     assert "Formale Kontenbereichs- sowie Duplikat-/Konfliktregeln bleiben" not in german_readme
     assert "Formal account-range and duplicate/conflict validation is intentionally deferred" not in english_readme
     assert "Die formale Prüfung erlaubter Kontenbereiche" not in user_guide
+    assert "154/154" in roadmap
+    assert "10/10" in roadmap
+    assert "Mapping-Tabelle bleibt als technische" in roadmap
+    assert "Automatische oder fachlich verbindliche Kontierung" in roadmap
+    assert "93-Spalten-Exportvertrag bleibt" in roadmap
+    assert "TASKPLAN ist die kanonische" in roadmap

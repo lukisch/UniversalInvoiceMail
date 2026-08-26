@@ -150,10 +150,11 @@ Fehlen OCR- oder Office-Pakete, überspringt die App nicht unterstützte Schritt
 - `berater_nr` und `mandant_nr` sind im Exportdialog einstellbar.
 - Der DATEV-Einstellungsdialog unterstützt editierbare Absender-/Schlüsselwort-Mappings,
   Hinzufügen/Entfernen, Standard-Wiederherstellung und Speicherung über `DATEVConfig`.
-- Der Dialog prüft vor dem Speichern Berater- und Mandantennummer, Sachkontenlänge
-  sowie nicht leere, numerische Konten-Zuordnungen und nennt Fehler direkt. Die
-  technische Prüfung ersetzt keine fachliche Kontierungsprüfung; der bestehende
-  93-Spalten-Exportvertrag bleibt unverändert.
+- Der Dialog prüft vor dem Speichern Berater- und Mandantennummer, Sachkontenlänge,
+  nicht leere numerische Konten-Zuordnungen sowie die von Groß-/Kleinschreibung
+  unabhängige Eindeutigkeit der Absender-/Schlüsselwort-Schlüssel und nennt Fehler
+  direkt. Die technische Prüfung ersetzt keine fachliche Kontierungsprüfung; der
+  bestehende 93-Spalten-Exportvertrag bleibt unverändert.
 - Rechnungen ohne eingetragenen Betrag werden bewusst übersprungen und danach ausgewiesen.
 - `Bundle Export` schreibt ein redigiertes JSON-Bundle mit Profilfiltern, DATEV-Basisdaten, Rechnungs-Hashes und optionalen Dateireferenzen.
 - `Bundle Import` akzeptiert aus einem Companion nur Betrag, Prüfflag und Notiz zurück und prüft vor dem Reimport ID und Datei-Hash.

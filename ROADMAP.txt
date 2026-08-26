@@ -3,12 +3,14 @@
 
 AKTUELL: v2.3.0
 ===============
-Status: Stabiler Desktop-Baseline v2.3.0 + Web/PWA Companion (Local-First; 146 Pytest + 10 Node Tests grün)
-Stand: 2026-08-21
+Status: Stabiler Desktop-Baseline v2.3.0 + Web/PWA Companion (Local-First; 154 Pytest + 10 Node Tests grün)
+Stand: 2026-08-26
 
-### Dokumentations- und Verifikationsstand (2026-08-21)
-- Plan-D-Readback: `146/146` Pytest-Tests (100% grün in 2.74s), Source-Platform-Smoke und `compileall` grün.
-- Die getrackte Web-Companion-Baseline bleibt bei `10/10` Node-Tests (156 Tests Gesamt-Suite).
+### Dokumentations- und Verifikationsstand (2026-08-26)
+- Readback-Basis: `master` bei `107a08353917986d9a43610d53ef41528d38710b`;
+  diese Statuskorrektur baut direkt darauf auf.
+- Plan-D-Readback: `154/154` Pytest-Tests (100% grün), Source-Platform-Smoke und `compileall` grün.
+- Die getrackte Web-Companion-Baseline bleibt bei `10/10` Node-Tests (164 Tests Gesamt-Suite).
 - DATEV-Validierung (`TW-UIM-04` / TASKPLAN #1156) und Multi-Language I18N-System (Policy P-006 / 6 Sprachen `de`, `en`, `es`, `zh`, `ja`, `ru`) vollständig umgesetzt und abgesichert.
 
 ## ERLEDIGTE MEILENSTEINE (v1.0 bis v2.3.0)
@@ -50,9 +52,9 @@ Stand: 2026-08-21
 
 
 ## BEKANNTE BUGS & FEHLERFREIHEIT
-- Core-Codebase: Keine bekannten offenen P0/P1-Bugs im geprüften Baseline-Stand. `146/146` Pytest-Tests grün.
+- Core-Codebase: Keine bekannten offenen P0/P1-Bugs im geprüften Baseline-Stand. `154/154` Pytest-Tests grün.
 - HTML-Escaping & Sanitizing vollständig abgedeckte Guards.
-- DATEV-Validierung & I18N zu 100% testabgedeckt.
+- DATEV-Validierung & I18N durch Contract- und Regressionstests abgedeckt.
 
 
 ## OFFENE GEPLANTE STRÄNGE & TASKPLAN-AUFGABEN
@@ -74,13 +76,26 @@ Stand: 2026-08-21
 - **Voraussetzung:** Bedarfsbeleg, MFA-Strategie & ToS-Prüfung.
 
 ### [TW-UIM-04] GUI für DATEV-Konten-Mapping-Tabelle & Validierung (TASKPLAN #1156)
-- **Status:** Completed (2026-08-21)
-- **Ziel:** Fachliche Validierungs- und Kontierungsregeln für DATEV-Export und UI-Dialog im Einstellungs-Tab.
-- **Erledigt:** `validate_account_number`, `validate_datev_config`, `validate_invoices_for_export`, `DATEVValidationReport` und Vorab-Validierung in `DATEVSettingsDialog` implementiert; 10 neue Contract-Tests in `tests/test_datev_validation.py`.
+- **Status:** Completed (2026-08-26)
+- **Entscheidung:** Die Mapping-Tabelle bleibt als technische, benutzerkonfigurierte
+  UI-Scheibe produktiv. Automatische oder fachlich verbindliche Kontierung ist
+  bewusst kein Bestandteil; die Prüfung durch Buchhaltung oder Steuerberatung
+  bleibt erforderlich.
+- **Erledigt:** Editierbare Absender-/Schlüsselwort-Mappings mit Hinzufügen,
+  Entfernen, Standard-Wiederherstellung und `DATEVConfig`-Persistenz sowie
+  nicht leeren, casefold-eindeutigen Schlüsseln und 4- bis 8-stelligen Konten,
+  `validate_account_number`, `validate_datev_config`,
+  `validate_invoices_for_export`, `DATEVValidationReport` und Vorab-Validierung
+  in `DATEVSettingsDialog`. Der bestehende 93-Spalten-Exportvertrag bleibt
+  unverändert und ist regressionsgesichert.
 
 ### [TW-UIM-05] ROADMAP-/Steuerdokumente gegen v2.3.0-/Companion-Stand (TASKPLAN #1157)
-- **Status:** Synchronisiert (2026-08-21)
-- **Abgleich:** Version, Bundle-/Companion-Grenzen, aktuelle Teststände (146 Pytest + 10 Node) und DATEV-/I18N-Funktionen sind in den lokalen Steuerdokumenten konsistent beschrieben.
+- **Status:** Synchronisiert (2026-08-26)
+- **Abgleich:** Version, Bundle-/Companion-Grenzen, aktuelle Teststände
+  (154 Pytest + 10 Node) und DATEV-/I18N-Funktionen sind in den versionierten
+  Steuerdokumenten konsistent beschrieben. TASKPLAN ist die kanonische
+  Aufgabensteuerung; die lokal ignorierte `AUFGABEN.txt` ist kein versionierter
+  Statusnachweis.
 
 
 ## NICHT-ZIELE & VERWORFENE IDEEN
@@ -90,7 +105,7 @@ Stand: 2026-08-21
 
 
 ## DOKUMENTATIONS-RESERVEN & REFERENZEN
-- `AUFGABEN.txt` — Aktuelle Taskplan-Referenzen & Detailfortschritte
+- TASKPLAN-Datenbank — kanonische Aufgabenreferenzen und Bearbeitungsstatus
 - `CHANGELOG.md` — Chronologische Versionshistorie
 - `EXPORTFORMAT.md` — Spezifikation des Bundle-Formats `universalinvoicemail-invoicebundle-v1.json`
 - `USER_GUIDE.md` — Handbuch für Einrichtung & Benutzung

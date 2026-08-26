@@ -23,6 +23,16 @@ Alle wichtigen Änderungen an diesem Projekt werden in dieser Datei dokumentiert
 
 ## [Unreleased]
 
+### DATEV mapping contract and roadmap readback (2026-08-26)
+- Prevented empty mapping keys, non-numeric account values, empty adviser/client
+  numbers, and case-insensitive duplicate sender/keyword keys from being silently
+  discarded or replaced before `DATEVSettingsDialog` validation.
+- Kept the mapping table as a user-configured technical aid; professional account
+  assignment remains with accounting or tax advisers, and the 93-column export
+  contract is unchanged.
+- Synchronized `ROADMAP.txt` with the verified v2.3.0/Companion baseline of
+  154 Pytest and 10 Node tests and identified TASKPLAN as the canonical task status.
+
 ### UX: Accurate DATEV validation guidance (2026-08-25)
 - Corrected the German and English user-facing DATEV documentation: the settings dialog
   validates its technical inputs before saving and reports errors; it does not silently fall
