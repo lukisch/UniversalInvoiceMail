@@ -360,14 +360,30 @@ class AppSettings:
 
 # ==================== HILFSFUNKTIONEN ====================
 
+_WIN_RESERVED_DEVICE_NAMES = {
+    "CON", "PRN", "AUX", "NUL",
+    "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
+    "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9",
+}
+
+
 def sanitize_filename(name: str) -> str:
-    """Removes invalid characters from filenames and limits length to 120 chars."""
+    """Removes invalid characters from filenames and limits length to 120 chars.
+
+    Hardened against directory traversal ('.', '..'), trailing Win32 dots/spaces,
+    and Windows reserved device names (CON, PRN, AUX, NUL, COM*, LPT*).
+    """
     if not name:
         return "unnamed"
-    s = re.sub(r'[<>:"/\\|?*\x00-\x1f]', '_', name)
+    s = re.sub(r'[<>:"/\\|?*\x00-\x1f]', '_', str(name))
     s = re.sub(r'\s+', '_', s)
     s = re.sub(r'_+', '_', s)
-    cleaned = s.strip('_')[:120]
+    cleaned = s.strip('_. ')[:120].rstrip('. ')
+    if not cleaned or cleaned in {".", ".."}:
+        return "unnamed"
+    stem = cleaned.split(".")[0].upper()
+    if stem in _WIN_RESERVED_DEVICE_NAMES:
+        cleaned = f"_{cleaned}"
     return cleaned or "unnamed"
 
 
@@ -1175,9 +1191,18 @@ def merge_pdf_with_body(pdf_path: Path, body_html: str, mail_meta: dict,
     if not XHTML2PDF_AVAILABLE:
         return False
 
+    merger_backend = None
     try:
         from PyPDF2 import PdfMerger
+        merger_backend = ("pypdf2", PdfMerger)
     except ImportError:
+        try:
+            from pypdf import PdfWriter
+            merger_backend = ("pypdf", PdfWriter)
+        except (ImportError, AttributeError):
+            pass
+
+    if merger_backend is None:
         # Fallback: Nur Original kopieren
         shutil.copy2(pdf_path, output_path)
         return True
@@ -1196,15 +1221,27 @@ def merge_pdf_with_body(pdf_path: Path, body_html: str, mail_meta: dict,
             return True
 
         # PDFs mergen: Original + Body
-        merger = PdfMerger()
-        try:
-            merger.append(str(pdf_path))
-            merger.append(str(tmp_body_path))
+        backend_type, backend_cls = merger_backend
+        if backend_type == "pypdf2":
+            merger = backend_cls()
+            try:
+                merger.append(str(pdf_path))
+                merger.append(str(tmp_body_path))
 
-            with open(output_path, 'wb') as f:
-                merger.write(f)
-        finally:
-            merger.close()
+                with open(output_path, 'wb') as f:
+                    merger.write(f)
+            finally:
+                merger.close()
+        else:
+            writer = backend_cls()
+            try:
+                writer.append(str(pdf_path))
+                writer.append(str(tmp_body_path))
+
+                with open(output_path, 'wb') as f:
+                    writer.write(f)
+            finally:
+                writer.close()
 
         return output_path.exists()
     except Exception:
@@ -1521,9 +1558,22 @@ def convert_attachment_to_pdf(file_data: bytes, source_name: str, output_path: P
                 return False, "Pillow nicht installiert"
 
             with Image.open(io.BytesIO(file_data)) as img:
-                if img.mode in {"RGBA", "LA"}:
-                    background = Image.new("RGB", img.size, (255, 255, 255))
-                    background.paste(img, mask=img.getchannel("A"))
+                try:
+                    from PIL import ImageOps
+                    img = ImageOps.exif_transpose(img)
+                except Exception:
+                    pass
+
+                has_alpha = (
+                    img.mode in {"RGBA", "LA", "PA"}
+                    or (img.mode == "P" and "transparency" in getattr(img, "info", {}))
+                    or ("A" in img.getbands() if hasattr(img, "getbands") else False)
+                )
+
+                if has_alpha:
+                    rgba_img = img.convert("RGBA")
+                    background = Image.new("RGB", rgba_img.size, (255, 255, 255))
+                    background.paste(rgba_img, mask=rgba_img.getchannel("A"))
                     img = background
                 elif img.mode != "RGB":
                     img = img.convert("RGB")

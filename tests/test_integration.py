@@ -32,7 +32,13 @@ for mod in ['xhtml2pdf', 'xhtml2pdf.pisa', 'pytesseract', 'pypdfium2',
             'google.auth.exceptions', 'google.oauth2', 'google.oauth2.credentials',
             'keyring']:
     if mod not in sys.modules:
-        sys.modules[mod] = MagicMock()
+        if mod.startswith(("selenium", "webdriver")):
+            sys.modules[mod] = MagicMock()
+        else:
+            try:
+                __import__(mod)
+            except ImportError:
+                sys.modules[mod] = MagicMock()
 
 import UniversalInvoiceMail as uim
 

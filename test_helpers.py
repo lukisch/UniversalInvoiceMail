@@ -25,7 +25,13 @@ for mod in ['PyQt6', 'PyQt6.QtWidgets', 'PyQt6.QtCore', 'PyQt6.QtGui',
             'reportlab.lib.pagesizes', 'reportlab.lib.units', 'reportlab.lib.utils',
             'docx2pdf', 'win32com', 'win32com.client', 'pythoncom']:
     if mod not in sys.modules:
-        sys.modules[mod] = MagicMock()
+        if mod.startswith(("PyQt6", "selenium", "webdriver")):
+            sys.modules[mod] = MagicMock()
+        else:
+            try:
+                __import__(mod)
+            except ImportError:
+                sys.modules[mod] = MagicMock()
 
 # Spezielle Mocks fuer Konstanten die beim Import gebraucht werden
 sys.modules['PyQt6.QtCore'].Qt = MagicMock()
