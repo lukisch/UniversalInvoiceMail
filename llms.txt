@@ -25,7 +25,7 @@ UniversalInvoiceMail is a local-first Windows desktop app for collecting invoice
 - `DATEV Buchungsstapel aus E-Mail`
 - `Rechnungen aus Gmail archivieren`
 
-## Last-checked: 2026-08-25
+## Last-checked: 2026-09-09
 
 Important files:
 
@@ -42,7 +42,7 @@ Important files:
 - `ROADMAP.txt`: Public roadmap and follow-up strands for the desktop and companion workflows.
 - `THIRD_PARTY_LICENSES.txt`: Third-party open-source license inventory.
 - `web_companion/`: local-only PWA review surface with committed install manifest and icons.
-- `tests/`: mocked unit, integration, validation, i18n, and metadata parity tests (153 Pytest + 10 Node tests in the tracked baseline; verified on 2026-08-25).
+- `tests/`: mocked unit, integration, validation, i18n, and metadata parity tests (154 Pytest + 10 Node tests in the tracked baseline; verified on 2026-09-09).
 - `DATEVSettingsDialog`: editable sender/keyword mapping table with add/remove/reset, pre-save validation against SKR03/SKR04 rules, and `DATEVConfig` persistence.
 
 Safety boundary:
